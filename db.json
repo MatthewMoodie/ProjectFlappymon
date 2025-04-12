@@ -1,0 +1,16 @@
+
+{
+    "usersDB": [
+        {
+            "username": "test",
+            "password": "test",
+            "favorites": [1, 4, 7],
+            "scores": [
+                {"pokemonId": 1, "score": 10, "date": "2023-01-01T00:00:00Z"},
+                {"pokemonId": 4, "score": 15, "date": "2023-01-02T00:00:00Z"}
+            ],
+            "selectedPokemon": 1
+        }
+    ]
+}
+11 April 2025
