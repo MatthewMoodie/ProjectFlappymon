@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokemon Flappy Bird</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Auth Screens -->
+        <div id="auth-container">
+            <div id="login-form" class="auth-form">
+                <h2>Login</h2>
+                <input type="text" id="login-username" placeholder="Username" required>
+                <input type="password" id="login-password" placeholder="Password" required>
+                <button id="login-btn">Login</button>
+                <p>Don't have an account? <a href="#" id="show-register">Register</a></p>
+            </div>
+
+            <div id="register-form" class="auth-form" style="display: none;">
+                <h2>Register</h2>
+                <input type="text" id="register-username" placeholder="Username" required>
+                <input type="password" id="register-password" placeholder="Password" required>
+                <input type="password" id="register-confirm" placeholder="Confirm Password" required>
+                <button id="register-btn">Register</button>
+                <p>Already have an account? <a href="#" id="show-login">Login</a></p>
+            </div>
+        </div>
+
+        <!-- Main Game Screen (hidden initially) -->
+        <div id="game-container" style="display: none;">
+            <div id="pokemon-selection">
+                <h2>Choose Your Pokemon</h2>
+                <div id="pokemon-grid"></div>
+                <div id="favorites-section">
+                    <h3>Your Favorites</h3>
+                    <div id="favorites-grid"></div>
+                </div>
+                <button id="start-game-btn">Start Game</button>
+            </div>
+
+            <div id="game-screen" style="display: none;">
+                <canvas id="game-canvas" width="400" height="600"></canvas>
+                <div id="game-over" style="display: none;">
+                    <h2>Game Over!</h2>
+                    <p id="final-score">Score: 0</p>
+                    <button id="play-again-btn">Play Again</button>
+                </div>
+            </div>
+
+            <div id="leaderboard">
+                <h2>Top Scores</h2>
+                <table id="scores-table">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Username</th>
+                            <th>Pokemon</th>
+                            <th>Score</th>
+                        </tr>
+                    </thead>
+                    <tbody id="scores-body">
+                        <!-- Scores will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="auth.js"></script>
+    <script src="api.js"></script>
+    <script src="game.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
