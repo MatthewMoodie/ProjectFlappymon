@@ -8,7 +8,7 @@ class FlappyBirdGame {
         this.score = 0;
         this.highScore = Number(localStorage.getItem('highScore')) || 0;
         
-        // Game elements
+        
         this.bird = {
             x: 100,
             y: this.canvas.height / 2,
@@ -22,7 +22,7 @@ class FlappyBirdGame {
         this.pipes = [];
         this.pipeWidth = 60;
         this.pipeGap = 190;
-        this.pipeFrequency = 180; // frames
+        this.pipeFrequency = 180; 
         this.frameCount = 0;
         
         this.ground = {
@@ -30,10 +30,10 @@ class FlappyBirdGame {
             height: 50
         };
         
-        // Load Pokemon sprite
+        
         this.loadPokemonSprite();
         
-        // Event listeners
+        
         this.canvas.addEventListener('click', () => this.jump());
         document.addEventListener('keydown', (e) => {
             if (e.code === 'Space') this.jump();
@@ -61,17 +61,17 @@ class FlappyBirdGame {
     update() {
         if (this.gameOver) return;
         
-        // Update bird
+        
         this.bird.velocity += this.bird.gravity;
         this.bird.y += this.bird.velocity;
         
-        // Check collisions with ground and ceiling
+        
         if (this.bird.y + this.bird.height > this.ground.y || this.bird.y < 0) {
             this.endGame();
             return;
         }
         
-        // Generate pipes
+       
         this.frameCount++;
         if (this.frameCount % this.pipeFrequency === 0) {
             const gapPosition = Math.random() * (this.canvas.height - this.pipeGap - this.ground.height - 100) + 50;
@@ -83,11 +83,11 @@ class FlappyBirdGame {
             });
         }
         
-        // Update pipes
+        
         for (let i = this.pipes.length - 1; i >= 0; i--) {
             this.pipes[i].x -= 2;
             
-            // Check collisions
+            
             if (
                 this.bird.x + this.bird.width > this.pipes[i].x &&
                 this.bird.x < this.pipes[i].x + this.pipeWidth &&
@@ -98,13 +98,13 @@ class FlappyBirdGame {
                 return;
             }
             
-            // Score point when passing a pipe
+            
             if (!this.pipes[i].passed && this.bird.x > this.pipes[i].x + this.pipeWidth) {
                 this.pipes[i].passed = true;
                 this.score++;
             }
             
-            // Remove off-screen pipes
+            
             if (this.pipes[i].x + this.pipeWidth < 0) {
                 this.pipes.splice(i, 1);
             }
@@ -112,25 +112,25 @@ class FlappyBirdGame {
     }
     
     draw() {
-        // Clear canvas
+        
         this.ctx.fillStyle = '#87CEEB';
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
         
-        // Draw pipes
+        //pipes
         this.ctx.fillStyle = '#4CAF50';
         for (const pipe of this.pipes) {
-            // Top pipe
+            //top pipe
             this.ctx.fillRect(pipe.x, 0, this.pipeWidth, pipe.topHeight);
             
-            // Bottom pipe
+            //bottom pipe
             this.ctx.fillRect(pipe.x, pipe.bottomY, this.pipeWidth, this.canvas.height - pipe.bottomY);
         }
         
-        // Draw ground
+        //ground
         this.ctx.fillStyle = '#8B4513';
         this.ctx.fillRect(0, this.ground.y, this.canvas.width, this.ground.height);
         
-        // Draw bird (Pokemon)
+        //flappybird (the pokemon)
         if (this.pokemonSprite) {
             this.ctx.drawImage(
                 this.pokemonSprite,
@@ -144,7 +144,7 @@ class FlappyBirdGame {
             this.ctx.fillRect(this.bird.x, this.bird.y, this.bird.width, this.bird.height);
         }
         
-        // Draw scores
+        //score
         this.ctx.fillStyle = '#000';
         this.ctx.font = '24px Arial';
         this.ctx.fillText(`Score: ${this.score}`, 20, 40);
@@ -154,7 +154,7 @@ class FlappyBirdGame {
     endGame() {
         this.gameOver = true;
         
-        // Update high score if current score is higher
+        //high score changer
         if (this.score > this.highScore) {
             this.highScore = this.score;
             try {
@@ -164,7 +164,7 @@ class FlappyBirdGame {
             }
         }
         
-        // Update game over display
+        //game over screen
         document.getElementById('final-score').textContent = `Score: ${this.score}`;
         document.getElementById('high-score').textContent = `High Score: ${this.highScore}`;
         document.getElementById('game-over').style.display = 'block';
