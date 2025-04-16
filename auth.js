@@ -1,4 +1,4 @@
-// Mock database for users (in a real app, use a backend)
+
 const usersDB = JSON.parse(localStorage.getItem('usersDB')) || [];
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const gameContainer = document.getElementById('game-container');
     const authContainer = document.getElementById('auth-container');
     
-    // Login
+    
     loginBtn.addEventListener('click', () => {
         const username = document.getElementById('login-username').value;
         const password = document.getElementById('login-password').value;
@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
     
-    // Register
+    
     registerBtn.addEventListener('click', () => {
         const username = document.getElementById('register-username').value;
         const password = document.getElementById('register-password').value;
