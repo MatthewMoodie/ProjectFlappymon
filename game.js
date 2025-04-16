@@ -6,6 +6,7 @@ class FlappyBirdGame {
         this.pokemonSprite = null;
         this.gameOver = false;
         this.score = 0;
+        this.highScore = Number(localStorage.getItem('highScore')) || 0;
         
         // Game elements
         this.bird = {
@@ -14,14 +15,14 @@ class FlappyBirdGame {
             width: 40,
             height: 30,
             velocity: 0,
-            gravity: 0.5,
-            jumpForce: -10
+            gravity: 0.11,
+            jumpForce: -3.7
         };
         
         this.pipes = [];
         this.pipeWidth = 60;
-        this.pipeGap = 150;
-        this.pipeFrequency = 120; // frames
+        this.pipeGap = 190;
+        this.pipeFrequency = 180; // frames
         this.frameCount = 0;
         
         this.ground = {
@@ -143,15 +144,29 @@ class FlappyBirdGame {
             this.ctx.fillRect(this.bird.x, this.bird.y, this.bird.width, this.bird.height);
         }
         
-        // Draw score
+        // Draw scores
         this.ctx.fillStyle = '#000';
         this.ctx.font = '24px Arial';
         this.ctx.fillText(`Score: ${this.score}`, 20, 40);
+        this.ctx.fillText(`High Score: ${this.highScore}`, 20, 70);
     }
     
     endGame() {
         this.gameOver = true;
+        
+        // Update high score if current score is higher
+        if (this.score > this.highScore) {
+            this.highScore = this.score;
+            try {
+                localStorage.setItem('highScore', this.highScore);
+            } catch (e) {
+                console.warn("Couldn't save high score:", e);
+            }
+        }
+        
+        // Update game over display
         document.getElementById('final-score').textContent = `Score: ${this.score}`;
+        document.getElementById('high-score').textContent = `High Score: ${this.highScore}`;
         document.getElementById('game-over').style.display = 'block';
         recordScore(this.pokemonId, this.score);
     }
@@ -170,3 +185,14 @@ function startFlappyBirdGame(pokemonId) {
     const game = new FlappyBirdGame('game-canvas', pokemonId);
     game.loop();
 }
+
+document.addEventListener('keydown', function(event) {
+    if (event.code === 'Space') {
+        event.preventDefault(); 
+        if (!gameOver) {       
+            birdJump();        
+        } else {
+            resetGame();       
+        }
+    }
+});

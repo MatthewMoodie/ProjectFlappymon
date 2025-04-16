@@ -41,10 +41,15 @@
             </div>
 
             <div id="game-screen" style="display: none;">
+                <!-- Added score displays here -->
+                <div class="score-display">
+                </div>
+                
                 <canvas id="game-canvas" width="400" height="600"></canvas>
                 <div id="game-over" style="display: none;">
                     <h2>Game Over!</h2>
                     <p id="final-score">Score: 0</p>
+                    <p id="high-score">High Score: 0</p>
                     <button id="play-again-btn">Play Again</button>
                 </div>
             </div>
