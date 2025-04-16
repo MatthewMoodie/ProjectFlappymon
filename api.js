@@ -6,7 +6,7 @@ async function fetchAllPokemon() {
     if (allPokemon.length > 0) return allPokemon;
     
     try {
-        const response = await fetch(`${POKEAPI_URL}/pokemon?limit=151`); // First 151 Pokemon
+        const response = await fetch(`${POKEAPI_URL}/pokemon?limit=151`); 
         const data = await response.json();
         allPokemon = data.results;
         return allPokemon;
@@ -66,7 +66,7 @@ async function displayPokemonGrid(containerId, pokemonList) {
         
         container.appendChild(card);
         
-        // Add click event to select Pokemon
+       
         card.addEventListener('click', () => {
             document.querySelectorAll('.pokemon-card').forEach(c => c.classList.remove('selected'));
             card.classList.add('selected');
@@ -76,7 +76,7 @@ async function displayPokemonGrid(containerId, pokemonList) {
             updateUser(user);
         });
         
-        // Add favorite button event
+        
         const favBtn = card.querySelector('.favorite-btn');
         favBtn.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -92,7 +92,7 @@ async function displayPokemonGrid(containerId, pokemonList) {
             }
             
             updateUser(user);
-            displayFavorites(); // Refresh favorites display
+            displayFavorites(); 
         });
     }
 }
@@ -131,7 +131,7 @@ async function initGame() {
         if (selectedCard) selectedCard.classList.add('selected');
     }
     
-    // Start game button
+    
     document.getElementById('start-game-btn').addEventListener('click', () => {
         const user = getCurrentUser();
         if (!user.selectedPokemon) {
@@ -144,14 +144,14 @@ async function initGame() {
         startFlappyBirdGame(user.selectedPokemon);
     });
     
-    // Play again button
+    
     document.getElementById('play-again-btn').addEventListener('click', () => {
         document.getElementById('game-over').style.display = 'none';
         const user = getCurrentUser();
         startFlappyBirdGame(user.selectedPokemon);
     });
     
-    // Load leaderboard
+    
     updateLeaderboard();
 }
 
@@ -173,7 +173,7 @@ function updateLeaderboard() {
         });
     });
     
-    // Sort by score descending
+    
     allScores.sort((a, b) => b.score - a.score);
     
     const topScores = allScores.slice(0, 10);
