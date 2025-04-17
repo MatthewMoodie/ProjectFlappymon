@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // DOM elements
+    //DOM elements
     const loginForm = document.getElementById('login-form');
     const registerForm = document.getElementById('register-form');
     const showRegister = document.getElementById('show-register');
@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const gameContainer = document.getElementById('game-container');
     const authContainer = document.getElementById('auth-container');
 
-    // Event listeners for auth forms
+    //auth forms
     showRegister.addEventListener('click', (e) => {
         e.preventDefault();
         loginForm.style.display = 'none';
@@ -20,12 +20,12 @@ document.addEventListener('DOMContentLoaded', () => {
         loginForm.style.display = 'flex';
     });
 
-    // Initialize game when user is logged in
+    //start game when user is logged in
     if (localStorage.getItem('currentUser')) {
         authContainer.style.display = 'none';
         gameContainer.style.display = 'block';
         initGame();
     }
 
-    // Login/Register functionality is in auth.js
+    // log and reg is in auth.js
 });
