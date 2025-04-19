@@ -19,13 +19,4 @@ document.addEventListener('DOMContentLoaded', () => {
         registerForm.style.display = 'none';
         loginForm.style.display = 'flex';
     });
-
-    //start game when user is logged in
-    if (localStorage.getItem('currentUser')) {
-        authContainer.style.display = 'none';
-        gameContainer.style.display = 'block';
-        initGame();
-    }
-
-    // log and reg is in auth.js
 });

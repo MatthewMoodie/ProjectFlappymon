@@ -1,91 +1,82 @@
-
-const usersDB = JSON.parse(localStorage.getItem('usersDB')) || [];
+// Make these variables global
+window.allPokemon = [];
+window.pokemonDetailsCache = {};
+window.currentGame = null;
 
 document.addEventListener('DOMContentLoaded', () => {
-    const loginBtn = document.getElementById('login-btn');
-    const registerBtn = document.getElementById('register-btn');
+    const loginForm = document.getElementById('login-form');
+    const registerForm = document.getElementById('register-form');
+    const showRegister = document.getElementById('show-register');
+    const showLogin = document.getElementById('show-login');
     const gameContainer = document.getElementById('game-container');
     const authContainer = document.getElementById('auth-container');
-    
-    
-    loginBtn.addEventListener('click', () => {
+    const loginBtn = document.getElementById('login-btn');
+
+    // Hardcoded credentials
+    const BOB_ACCOUNT = {
+        username: "bob",
+        password: "bobpass",
+        favorites: [1, 4, 7],
+        scores: [
+            {"pokemonId": 1, "score": 10},
+            {"pokemonId": 4, "score": 15}
+        ],
+        selectedPokemon: 1
+    };
+
+    // Form toggling
+    showRegister.addEventListener('click', (e) => {
+        e.preventDefault();
+        loginForm.style.display = 'none';
+        registerForm.style.display = 'flex';
+    });
+
+    showLogin.addEventListener('click', (e) => {
+        e.preventDefault();
+        registerForm.style.display = 'none';
+        loginForm.style.display = 'flex';
+    });
+
+    // Login handler
+    loginBtn.addEventListener('click', async (e) => {
+        e.preventDefault();
         const username = document.getElementById('login-username').value.trim();
         const password = document.getElementById('login-password').value;
-        
-        // Debug: Check what's in storage
-        console.log("All users:", JSON.parse(localStorage.getItem('usersDB')));
-        
-        const usersDB = JSON.parse(localStorage.getItem('usersDB')) || [];
-        const user = usersDB.find(u => u.username === username && u.password === password);
-        
-        if (user) {
-            localStorage.setItem('currentUser', JSON.stringify(user));
+
+        if (username === BOB_ACCOUNT.username && password === BOB_ACCOUNT.password) {
+            localStorage.setItem('currentUser', JSON.stringify(BOB_ACCOUNT));
             authContainer.style.display = 'none';
             gameContainer.style.display = 'block';
-            initGame();
+            
+            try {
+                await fetchAllPokemon();
+                initGame();
+            } catch (error) {
+                console.error("Game initialization failed:", error);
+                alert("Failed to load game. Please refresh and try again.");
+            }
         } else {
-            alert('Invalid username or password');
+            alert("Invalid credentials. Use:\nUsername: bob\nPassword: bobpass");
         }
     });
-    
-    
-    registerBtn.addEventListener('click', () => {
-        const username = document.getElementById('register-username').value.trim();
-        const password = document.getElementById('register-password').value;
-        const confirm = document.getElementById('register-confirm').value;
-        
-        // Validation
-        if (!username || !password) {
-            alert('Username and password are required');
-            return;
-        }
-        
-        if (password !== confirm) {
-            alert('Passwords do not match');
-            return;
-        }
-        
-        // Check if user exists
-        const usersDB = JSON.parse(localStorage.getItem('usersDB')) || [];
-        if (usersDB.some(u => u.username === username)) {
-            alert('Username already exists');
-            return;
-        }
-        
-        // Create new user
-        const newUser = {
-            username,
-            password, // Note: In production, NEVER store plaintext passwords
-            favorites: [],
-            scores: [],
-            selectedPokemon: null
-        };
-        
-        // Update database
-        usersDB.push(newUser);
-        localStorage.setItem('usersDB', JSON.stringify(usersDB));
-        localStorage.setItem('currentUser', JSON.stringify(newUser));
-        
-        // Debug: Verify storage
-        console.log("Current usersDB:", JSON.parse(localStorage.getItem('usersDB')));
-        
-        // Redirect to game
+
+    // Auto-login if already authenticated
+    if (localStorage.getItem('currentUser')) {
         authContainer.style.display = 'none';
         gameContainer.style.display = 'block';
         initGame();
-    });
+    }
 });
 
+// Global functions
 function getCurrentUser() {
     return JSON.parse(localStorage.getItem('currentUser'));
 }
 
 function updateUser(user) {
-    const usersDB = JSON.parse(localStorage.getItem('usersDB')) || [];
-    const index = usersDB.findIndex(u => u.username === user.username);
-    if (index !== -1) {
-        usersDB[index] = user;
-        localStorage.setItem('usersDB', JSON.stringify(usersDB));
-        localStorage.setItem('currentUser', JSON.stringify(user));
-    }
+    localStorage.setItem('currentUser', JSON.stringify(user));
+}
+// Example in auth.js
+function onLogin(username) {
+    localStorage.setItem('username', username);
 }

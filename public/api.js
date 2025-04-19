@@ -1,15 +1,18 @@
 const POKEAPI_URL = 'https://pokeapi.co/api/v2';
-let allPokemon = [];
-let pokemonDetailsCache = {};
+
+// Initialize global cache objects
+window.pokemonDetailsCache = {};
+window.scoreCache = {};
 
 async function fetchAllPokemon() {
-    if (allPokemon.length > 0) return allPokemon;
+    if (window.allPokemon && window.allPokemon.length > 0) return window.allPokemon;
     
     try {
-        const response = await fetch(`${POKEAPI_URL}/pokemon?limit=151`); 
+        console.log("Fetching Pokémon from API...");
+        const response = await fetch(`${POKEAPI_URL}/pokemon?limit=151`);
         const data = await response.json();
-        allPokemon = data.results;
-        return allPokemon;
+        window.allPokemon = data.results;
+        return window.allPokemon;
     } catch (error) {
         console.error('Error fetching Pokemon:', error);
         return [];
@@ -17,7 +20,7 @@ async function fetchAllPokemon() {
 }
 
 async function fetchPokemonDetails(url) {
-    if (pokemonDetailsCache[url]) return pokemonDetailsCache[url];
+    if (window.pokemonDetailsCache[url]) return window.pokemonDetailsCache[url];
     
     try {
         const response = await fetch(url);
@@ -30,7 +33,7 @@ async function fetchPokemonDetails(url) {
             image: data.sprites.other['official-artwork']?.front_default || data.sprites.front_default
         };
         
-        pokemonDetailsCache[url] = details;
+        window.pokemonDetailsCache[url] = details;
         return details;
     } catch (error) {
         console.error('Error fetching Pokemon details:', error);
@@ -66,7 +69,6 @@ async function displayPokemonGrid(containerId, pokemonList) {
         
         container.appendChild(card);
         
-       
         card.addEventListener('click', () => {
             document.querySelectorAll('.pokemon-card').forEach(c => c.classList.remove('selected'));
             card.classList.add('selected');
@@ -75,7 +77,6 @@ async function displayPokemonGrid(containerId, pokemonList) {
             user.selectedPokemon = details.id;
             updateUser(user);
         });
-        
         
         const favBtn = card.querySelector('.favorite-btn');
         favBtn.addEventListener('click', (e) => {
@@ -92,14 +93,14 @@ async function displayPokemonGrid(containerId, pokemonList) {
             }
             
             updateUser(user);
-            displayFavorites(); 
+            displayFavorites();
         });
     }
 }
 
 async function displayFavorites() {
     const user = getCurrentUser();
-    if (!user || !user.favorites.length) {
+    if (!user || !user.favorites || user.favorites.length === 0) {
         document.getElementById('favorites-section').style.display = 'none';
         return;
     }
@@ -108,7 +109,7 @@ async function displayFavorites() {
     
     const favoritePokemon = await Promise.all(
         user.favorites.map(async id => {
-            const pokemon = allPokemon.find(p => {
+            const pokemon = window.allPokemon.find(p => {
                 const urlParts = p.url.split('/');
                 return parseInt(urlParts[urlParts.length - 2]) === id;
             });
@@ -120,9 +121,151 @@ async function displayFavorites() {
     displayPokemonGrid('favorites-grid', favoritePokemon.filter(p => p !== null));
 }
 
+function saveScore(pokemonId, score) {
+    const user = getCurrentUser();
+    if (!user) return;
+    
+    // Initialize scores array if it doesn't exist
+    if (!user.scores) {
+        user.scores = [];
+    }
+    
+    // Add new score
+    user.scores.push({
+        pokemonId,
+        score,
+        timestamp: new Date().toISOString()
+    });
+    
+    // Keep only top 10 scores per user
+    user.scores.sort((a, b) => b.score - a.score);
+    user.scores = user.scores.slice(0, 10);
+    
+    updateUser(user);
+    
+    // Also save to global scores for leaderboard
+    const allScores = JSON.parse(localStorage.getItem('allScores')) || [];
+    allScores.push({
+        username: user.username,
+        pokemonId,
+        score,
+        timestamp: new Date().toISOString()
+    });
+    
+    // Keep only top 100 global scores
+    allScores.sort((a, b) => b.score - a.score);
+    const topScores = allScores.slice(0, 100);
+    localStorage.setItem('allScores', JSON.stringify(topScores));
+    
+    // Update displays
+    displayUserScores();
+    updateLeaderboard();
+}
+
+function updateLeaderboard() {
+    const allScores = JSON.parse(localStorage.getItem('allScores')) || [];
+    
+    // Sort scores high to low
+    const sortedScores = allScores.sort((a, b) => b.score - a.score);
+    
+    const tableBody = document.getElementById('scores-body');
+    tableBody.innerHTML = '';
+    
+    sortedScores.forEach((entry, index) => {
+        const row = document.createElement('tr');
+        
+        // Find Pokemon name
+        const pokemon = window.allPokemon.find(p => {
+            const urlParts = p.url.split('/');
+            return parseInt(urlParts[urlParts.length - 2]) === entry.pokemonId;
+        });
+        
+        const pokemonName = pokemon ? pokemon.name : `#${entry.pokemonId}`;
+        
+        row.innerHTML = `
+            <td>${index + 1}</td>
+            <td>${entry.username || 'Anonymous'}</td>
+            <td>${pokemonName}</td>
+            <td>${entry.score}</td>
+        `;
+        
+        tableBody.appendChild(row);
+    });
+}
+
+function displayUserScores() {
+    const user = getCurrentUser();
+    if (!user || !user.scores || user.scores.length === 0) {
+        document.getElementById('user-scores-body').innerHTML = '<tr><td colspan="3">No scores yet</td></tr>';
+        return;
+    }
+    
+    const tableBody = document.getElementById('user-scores-body');
+    tableBody.innerHTML = '';
+    
+    // Sort scores high to low and get top 5
+    const sortedScores = user.scores.sort((a, b) => b.score - a.score).slice(0, 5);
+    
+    sortedScores.forEach((entry, index) => {
+        const row = document.createElement('tr');
+        
+        // Find Pokemon name
+        const pokemon = window.allPokemon.find(p => {
+            const urlParts = p.url.split('/');
+            return parseInt(urlParts[urlParts.length - 2]) === entry.pokemonId;
+        });
+        
+        const pokemonName = pokemon ? pokemon.name : `#${entry.pokemonId}`;
+        
+        row.innerHTML = `
+            <td>${index + 1}</td>
+            <td>${pokemonName}</td>
+            <td>${entry.score}</td>
+        `;
+        
+        tableBody.appendChild(row);
+    });
+}
+
+function updateLeaderboard() {
+    const allScores = JSON.parse(localStorage.getItem('allScores')) || [];
+    
+    // Sort scores high to low and get top 10
+    const sortedScores = allScores.sort((a, b) => b.score - a.score).slice(0, 10);
+    
+    const tableBody = document.getElementById('global-scores-body');
+    tableBody.innerHTML = '';
+    
+    if (sortedScores.length === 0) {
+        tableBody.innerHTML = '<tr><td colspan="4">No scores yet</td></tr>';
+        return;
+    }
+    
+    sortedScores.forEach((entry, index) => {
+        const row = document.createElement('tr');
+        
+        // Find Pokemon name
+        const pokemon = window.allPokemon.find(p => {
+            const urlParts = p.url.split('/');
+            return parseInt(urlParts[urlParts.length - 2]) === entry.pokemonId;
+        });
+        
+        const pokemonName = pokemon ? pokemon.name : `#${entry.pokemonId}`;
+        
+        row.innerHTML = `
+            <td>${index + 1}</td>
+            <td>${entry.username || 'Anonymous'}</td>
+            <td>${pokemonName}</td>
+            <td>${entry.score}</td>
+        `;
+        
+        tableBody.appendChild(row);
+    });
+}
+
 async function initGame() {
     await fetchAllPokemon();
-    await displayPokemonGrid('pokemon-grid', allPokemon);
+    await displayPokemonGrid('pokemon-grid', window.allPokemon);
     displayFavorites();
     
     const user = getCurrentUser();
@@ -130,7 +273,6 @@ async function initGame() {
         const selectedCard = document.querySelector(`.pokemon-card[data-id="${user.selectedPokemon}"]`);
         if (selectedCard) selectedCard.classList.add('selected');
     }
-    
     
     document.getElementById('start-game-btn').addEventListener('click', () => {
         const user = getCurrentUser();
@@ -144,65 +286,12 @@ async function initGame() {
         startFlappyBirdGame(user.selectedPokemon);
     });
     
-    
     document.getElementById('play-again-btn').addEventListener('click', () => {
         document.getElementById('game-over').style.display = 'none';
         const user = getCurrentUser();
         startFlappyBirdGame(user.selectedPokemon);
     });
     
-    
     updateLeaderboard();
-}
-
-function updateLeaderboard() {
-    const usersDB = JSON.parse(localStorage.getItem('usersDB')) || [];
-    const allScores = [];
-    
-    usersDB.forEach(user => {
-        user.scores.forEach(score => {
-            allScores.push({
-                username: user.username,
-                pokemonId: score.pokemonId,
-                pokemonName: allPokemon.find(p => {
-                    const urlParts = p.url.split('/');
-                    return parseInt(urlParts[urlParts.length - 2]) === score.pokemonId;
-                })?.name || 'Unknown',
-                score: score.score
-            });
-        });
-    });
-    
-    
-    allScores.sort((a, b) => b.score - a.score);
-    
-    const topScores = allScores.slice(0, 10);
-    const scoresBody = document.getElementById('scores-body');
-    scoresBody.innerHTML = '';
-    
-    topScores.forEach((score, index) => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td>${index + 1}</td>
-            <td>${score.username}</td>
-            <td>${score.pokemonName}</td>
-            <td>${score.score}</td>
-        `;
-        scoresBody.appendChild(row);
-    });
-}
-
-function recordScore(pokemonId, score) {
-    const user = getCurrentUser();
-    if (!user) return;
-    
-    user.scores = user.scores || [];
-    user.scores.push({
-        pokemonId,
-        score,
-        date: new Date().toISOString()
-    });
-    
-    updateUser(user);
-    updateLeaderboard();
+    displayUserScores();
 }
