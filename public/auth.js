@@ -9,9 +9,13 @@ document.addEventListener('DOMContentLoaded', () => {
     
     
     loginBtn.addEventListener('click', () => {
-        const username = document.getElementById('login-username').value;
+        const username = document.getElementById('login-username').value.trim();
         const password = document.getElementById('login-password').value;
         
+        // Debug: Check what's in storage
+        console.log("All users:", JSON.parse(localStorage.getItem('usersDB')));
+        
+        const usersDB = JSON.parse(localStorage.getItem('usersDB')) || [];
         const user = usersDB.find(u => u.username === username && u.password === password);
         
         if (user) {
@@ -26,31 +30,46 @@ document.addEventListener('DOMContentLoaded', () => {
     
     
     registerBtn.addEventListener('click', () => {
-        const username = document.getElementById('register-username').value;
+        const username = document.getElementById('register-username').value.trim();
         const password = document.getElementById('register-password').value;
         const confirm = document.getElementById('register-confirm').value;
+        
+        // Validation
+        if (!username || !password) {
+            alert('Username and password are required');
+            return;
+        }
         
         if (password !== confirm) {
             alert('Passwords do not match');
             return;
         }
         
+        // Check if user exists
+        const usersDB = JSON.parse(localStorage.getItem('usersDB')) || [];
         if (usersDB.some(u => u.username === username)) {
             alert('Username already exists');
             return;
         }
         
+        // Create new user
         const newUser = {
             username,
-            password,
+            password, // Note: In production, NEVER store plaintext passwords
             favorites: [],
-            scores: []
+            scores: [],
+            selectedPokemon: null
         };
         
+        // Update database
         usersDB.push(newUser);
         localStorage.setItem('usersDB', JSON.stringify(usersDB));
         localStorage.setItem('currentUser', JSON.stringify(newUser));
         
+        // Debug: Verify storage
+        console.log("Current usersDB:", JSON.parse(localStorage.getItem('usersDB')));
+        
+        // Redirect to game
         authContainer.style.display = 'none';
         gameContainer.style.display = 'block';
         initGame();
