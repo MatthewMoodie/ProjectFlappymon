@@ -5,6 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pokemon Flappy Bird</title>
     <link rel="stylesheet" href="style.css">
+    <!-- Firebase scripts -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"></script>
+
+<script>
+ const firebaseConfig = {
+    apiKey: "AIzaSyCb9izNoFt9RlL4C44XZC3cWynM8BXyTkU",
+    authDomain: "info-1601-project-2b4bb.firebaseapp.com",
+    projectId: "info-1601-project-2b4bb",
+    storageBucket: "info-1601-project-2b4bb.firebasestorage.app",
+    messagingSenderId: "989604980668",
+    appId: "1:989604980668:web:9b60bcfa061c83570fadb9"
+  };
+
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+</script>
+
 </head>
 <body>
     <div class="container">
