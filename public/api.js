@@ -1,6 +1,8 @@
 const POKEAPI_URL = 'https://pokeapi.co/api/v2';
 
-// Initialize global cache objects
+
+
+
 window.pokemonDetailsCache = {};
 window.scoreCache = {};
 
@@ -18,6 +20,15 @@ async function fetchAllPokemon() {
         return [];
     }
 }
+
+
+
+
+
+
+
+
+
 
 async function fetchPokemonDetails(url) {
     if (window.pokemonDetailsCache[url]) return window.pokemonDetailsCache[url];
@@ -40,6 +51,12 @@ async function fetchPokemonDetails(url) {
         return null;
     }
 }
+
+
+
+
+
+
 
 async function displayPokemonGrid(containerId, pokemonList) {
     const container = document.getElementById(containerId);
@@ -98,6 +115,10 @@ async function displayPokemonGrid(containerId, pokemonList) {
     }
 }
 
+
+
+
+
 async function displayFavorites() {
     const user = getCurrentUser();
     if (!user || !user.favorites || user.favorites.length === 0) {
@@ -121,29 +142,30 @@ async function displayFavorites() {
     displayPokemonGrid('favorites-grid', favoritePokemon.filter(p => p !== null));
 }
 
+
 function saveScore(pokemonId, score) {
     const user = getCurrentUser();
     if (!user) return;
     
-    // Initialize scores array if it doesn't exist
+    
     if (!user.scores) {
         user.scores = [];
     }
     
-    // Add new score
+    
     user.scores.push({
         pokemonId,
         score,
         timestamp: new Date().toISOString()
     });
     
-    // Keep only top 10 scores per user
+    
     user.scores.sort((a, b) => b.score - a.score);
     user.scores = user.scores.slice(0, 10);
     
     updateUser(user);
     
-    // Also save to global scores for leaderboard
+    
     const allScores = JSON.parse(localStorage.getItem('allScores')) || [];
     allScores.push({
         username: user.username,
@@ -152,20 +174,22 @@ function saveScore(pokemonId, score) {
         timestamp: new Date().toISOString()
     });
     
-    // Keep only top 100 global scores
+    
     allScores.sort((a, b) => b.score - a.score);
     const topScores = allScores.slice(0, 100);
     localStorage.setItem('allScores', JSON.stringify(topScores));
     
-    // Update displays
+    
     displayUserScores();
     updateLeaderboard();
 }
 
+
+
 function updateLeaderboard() {
     const allScores = JSON.parse(localStorage.getItem('allScores')) || [];
     
-    // Sort scores high to low
+    
     const sortedScores = allScores.sort((a, b) => b.score - a.score);
     
     const tableBody = document.getElementById('scores-body');
@@ -174,7 +198,7 @@ function updateLeaderboard() {
     sortedScores.forEach((entry, index) => {
         const row = document.createElement('tr');
         
-        // Find Pokemon name
+        
         const pokemon = window.allPokemon.find(p => {
             const urlParts = p.url.split('/');
             return parseInt(urlParts[urlParts.length - 2]) === entry.pokemonId;
@@ -203,13 +227,13 @@ function displayUserScores() {
     const tableBody = document.getElementById('user-scores-body');
     tableBody.innerHTML = '';
     
-    // Sort scores high to low and get top 5
+    
     const sortedScores = user.scores.sort((a, b) => b.score - a.score).slice(0, 5);
     
     sortedScores.forEach((entry, index) => {
         const row = document.createElement('tr');
         
-        // Find Pokemon name
+        
         const pokemon = window.allPokemon.find(p => {
             const urlParts = p.url.split('/');
             return parseInt(urlParts[urlParts.length - 2]) === entry.pokemonId;
@@ -230,7 +254,7 @@ function displayUserScores() {
 function updateLeaderboard() {
     const allScores = JSON.parse(localStorage.getItem('allScores')) || [];
     
-    // Sort scores high to low and get top 10
+    
     const sortedScores = allScores.sort((a, b) => b.score - a.score).slice(0, 10);
     
     const tableBody = document.getElementById('global-scores-body');
@@ -244,7 +268,7 @@ function updateLeaderboard() {
     sortedScores.forEach((entry, index) => {
         const row = document.createElement('tr');
         
-        // Find Pokemon name
+        
         const pokemon = window.allPokemon.find(p => {
             const urlParts = p.url.split('/');
             return parseInt(urlParts[urlParts.length - 2]) === entry.pokemonId;
