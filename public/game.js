@@ -1,4 +1,4 @@
-// Wrap in conditional to prevent redefinition
+
 if (typeof FlappyBirdGame === 'undefined') {
     class FlappyBirdGame {
         constructor(canvasId, pokemonId) {
@@ -49,6 +49,8 @@ if (typeof FlappyBirdGame === 'undefined') {
             return Math.max(...pokemonScores.map(s => s.score));
         }
 
+
+        
         async loadPokemonSprite() {
             try {
                 const pokemon = window.allPokemon.find(p => {
@@ -152,20 +154,20 @@ if (typeof FlappyBirdGame === 'undefined') {
         endGame() {
             this.gameOver = true;
         
-            // Update high score if current score is higher
+            // change high score if current score is higher
             if (this.score > this.highScore) {
                 this.highScore = this.score;
             }
         
-            // Update the display
+            
             document.getElementById('final-score').textContent = `Score: ${this.score}`;
             document.getElementById('high-score').textContent = `High Score: ${this.highScore}`;
             document.getElementById('game-over').style.display = 'block';
             
-            // Save the score - make sure this line is present
+            
             saveScore(this.pokemonId, this.score);
             
-            // Immediately update the score displays
+           
             displayUserScores();
             updateLeaderboard();
         }
@@ -210,7 +212,7 @@ document.addEventListener('keydown', function(event) {
         }
     }
 });
-    //Needed for weirdoes that use touchscreen
+    //needed for weirdoes that use touchscreen...
 canvas.addEventListener('touchstart', function(e) {
     e.preventDefault();
     if (!gameOver) {
