@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    //DOM elements
+    
     const loginForm = document.getElementById('login-form');
     const registerForm = document.getElementById('register-form');
     const showRegister = document.getElementById('show-register');
@@ -7,7 +7,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const gameContainer = document.getElementById('game-container');
     const authContainer = document.getElementById('auth-container');
 
-    //auth forms
+
+
+    
     showRegister.addEventListener('click', (e) => {
         e.preventDefault();
         loginForm.style.display = 'none';
