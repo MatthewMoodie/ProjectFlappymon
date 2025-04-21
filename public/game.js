@@ -199,3 +199,23 @@ function startFlappyBirdGame(pokemonId) {
         alert("Game failed to start. Please try again.");
     }
 }
+
+document.addEventListener('keydown', function(event) {
+    if (event.code === 'Space') {
+        event.preventDefault(); 
+        if (!gameOver) {       
+            birdJump();        
+        } else {
+            resetGame();       
+        }
+    }
+});
+    //Needed for weirdoes that use touchscreen
+canvas.addEventListener('touchstart', function(e) {
+    e.preventDefault();
+    if (!gameOver) {
+        birdJump();
+    } else {
+        resetGame();
+    }
+});
