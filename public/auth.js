@@ -1,4 +1,4 @@
-// Make these variables global
+
 window.allPokemon = [];
 window.pokemonDetailsCache = {};
 window.currentGame = null;
@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const authContainer = document.getElementById('auth-container');
     const loginBtn = document.getElementById('login-btn');
 
-    // Hardcoded credentials
+    //login credentials
     const BOB_ACCOUNT = {
         username: "bob",
         password: "bobpass",
@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
         selectedPokemon: 1
     };
 
-    // Form toggling
+    
     showRegister.addEventListener('click', (e) => {
         e.preventDefault();
         loginForm.style.display = 'none';
@@ -37,7 +37,10 @@ document.addEventListener('DOMContentLoaded', () => {
         loginForm.style.display = 'flex';
     });
 
-    // Login handler
+
+
+    
+    
     loginBtn.addEventListener('click', async (e) => {
         e.preventDefault();
         const username = document.getElementById('login-username').value.trim();
@@ -60,7 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Auto-login if already authenticated
+    // auto login if already logged
     if (localStorage.getItem('currentUser')) {
         authContainer.style.display = 'none';
         gameContainer.style.display = 'block';
@@ -68,7 +71,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// Global functions
+
+
+
 function getCurrentUser() {
     return JSON.parse(localStorage.getItem('currentUser'));
 }
@@ -76,7 +81,7 @@ function getCurrentUser() {
 function updateUser(user) {
     localStorage.setItem('currentUser', JSON.stringify(user));
 }
-// Example in auth.js
+
 function onLogin(username) {
     localStorage.setItem('username', username);
 }
